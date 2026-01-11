@@ -36,16 +36,19 @@
 │               (products.db)                         │
 │                                                     │
 └─────────────────────────────────────────────────────┘
+```
 คำอธิบายองค์ประกอบ
+
 System User: ผู้ใช้งานระบบ (เจ้าของร้าน, พนักงาน) ที่ต้องการจัดการข้อมูลสินค้า
 
 Product Management System: ระบบ Software หลักที่ทำหน้าที่ประมวลผล Business Logic
 
 SQLite Database: ระบบฐานข้อมูลภายนอกสำหรับจัดเก็บข้อมูลถาวร
 
+
 2. C2: Container Diagram (Layered Architecture)
 โครงสร้างภายในระบบแบบแยกชั้น (Layered Architecture)
-
+```
 Plaintext
 
 ┌─────────────────────────────────────────────────────────────────┐
@@ -104,7 +107,10 @@ Plaintext
               │    SQLite Database      │
               │     (products.db)       │
               └─────────────────────────┘
+```
+
 3. Layer Responsibilities (หน้าที่ของแต่ละชั้น)
+
 3.1 Presentation Layer (ด่านหน้า)
 หน้าที่:
 
@@ -125,18 +131,20 @@ productController.js: ควบคุม Flow การทำงาน
 errorHandler.js: จัดการ Error กลาง
 
 ตัวอย่างโค้ด:
-
+```
 JavaScript
 
 // productController.js
 async createProduct(req, res, next) {
     try {
-        const product = await productService.createProduct(req.body); // เรียก Business Layer
+        // เรียก Business Layer
+        const product = await productService.createProduct(req.body); 
         res.status(201).json(product);
     } catch (error) {
         next(error);
     }
 }
+```
 ข้อห้าม (Don'ts): ❌ ห้ามเขียน SQL Query หรือ Business Logic ในชั้นนี้
 
 3.2 Business Logic Layer (สมองของระบบ)
@@ -165,7 +173,7 @@ Logic: สต็อกสินค้าห้ามติดลบ (stock >= 0)
 Calculation: คำนวณมูลค่ารวมได้จาก price * stock
 
 ตัวอย่างโค้ด:
-
+```
 JavaScript
 
 // productService.js
@@ -173,6 +181,7 @@ async createProduct(data) {
     productValidator.validatePrice(data.price); // Validation
     return await productRepository.create(data); // เรียก Data Layer
 }
+```
 ข้อห้าม (Don'ts): ❌ ห้ามยุ่งเกี่ยวกับ HTTP Request/Response หรือ SQL โดยตรง
 
 3.3 Data Access Layer (คลังข้อมูล)
@@ -195,7 +204,7 @@ Methods:
 findAll(category), findById(id), create(data), update(id, data), delete(id)
 
 ตัวอย่างโค้ด:
-
+```
 JavaScript
 
 // productRepository.js
@@ -203,11 +212,12 @@ async create(data) {
     const sql = 'INSERT INTO products (...) VALUES (...)';
     db.run(sql, [...values]); // สั่งงาน Database
 }
+```
 ข้อห้าม (Don'ts): ❌ ห้ามใส่ Business Logic หรือ Validation ในชั้นนี้
 
 4. Data Flow (ลำดับการทำงาน)
 ตัวอย่างกรณี: การเพิ่มสินค้าใหม่ (Create Product)
-
+```
 Plaintext
 
 1. CLIENT
@@ -232,6 +242,8 @@ Plaintext
 6. RESPONSE FLOW
    │ Database -> Repository -> Service -> Controller
    │ Controller ส่ง JSON Response (Status 201) กลับไปหา Client
+```
+
 5. Summary Checklist
 [x] Separation of Concerns: แยกการทำงานชัดเจน 3 ชั้น
 
@@ -240,4 +252,3 @@ Plaintext
 [x] Technology: Express.js + SQLite
 
 [x] Architecture: Layered Architecture (Strict Mode)
-
