@@ -31,7 +31,8 @@ class ProductValidator {
     }
 
     validateCategory(category) {
-        const validCategories = ['Electronics', 'Clothing', 'Food', 'Books', 'Toys'];
+        // ✅ แก้ไขตรงนี้ให้ตรงกับหน้าเว็บครับ
+        const validCategories = ['Electronics', 'Fashion', 'Food', 'Books', 'Sports'];
 
         if (!validCategories.includes(category)) {
             throw new Error(`Invalid category. Must be one of: ${validCategories.join(', ')}`);
